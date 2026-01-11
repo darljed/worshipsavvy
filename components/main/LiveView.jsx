@@ -1,7 +1,7 @@
 'use client'
 import { Image, MonitorCheck, Square, SquareDashed } from "lucide-react"
 import {Button} from "../ui/button"
-import { useRef, useState, useLayoutEffect } from "react"
+import { useRef, useState, useLayoutEffect, useEffect } from "react"
 import { mocklyrics } from "../../data/mockdata"
 import DisplayView from "./DisplayView"
 function LiveView() {
@@ -18,13 +18,37 @@ function LiveView() {
 }
 
 function LyricsControls({ lyrics, selectedId, setSelectedId }){
+
+    useEffect(() => {
+        function updateView(){
+
+            fetch('/api/memory/session/create',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ttl: 300,
+                    data: lyrics.find(lyric => lyric.id === selectedId).text,
+                }),
+            })
+        }
+
+        if(lyrics.length > 0 && selectedId){
+            updateView()
+        }
+    }, [selectedId, lyrics])
+
+
     return (
         // make this region take remaining vertical space and scroll internally
         <div className="w-full bg-gray-200 flex flex-col items-center px-2 gap-1 overflow-y-auto flex-1">
             {lyrics.map((lyric) => (
                 <div 
                     key={lyric.id}
-                    onClick={() => setSelectedId(lyric.id)}
+                    onClick={() => {
+                        setSelectedId(lyric.id)
+                    }}
                     className={`p-2 border-t w-full
                     ${selectedId === lyric.id ? "bg-blue-500 text-white" : ""}`}>
                     <span className="text-xs font-bold">{lyric.part}</span>

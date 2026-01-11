@@ -1,6 +1,5 @@
 'use client'
 import { useRef, useState, useLayoutEffect, useEffect } from "react"
-import { mocklyrics } from "../../data/mockdata"
 
 function DisplayView({content, height="h-75"}) {
 
